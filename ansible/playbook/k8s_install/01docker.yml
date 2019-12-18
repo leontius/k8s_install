@@ -1,0 +1,4 @@
+# docker.yml
+- hosts: k8s
+  roles:
+    - geerlingguy.docker

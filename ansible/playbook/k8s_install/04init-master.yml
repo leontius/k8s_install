@@ -1,0 +1,34 @@
+- hosts: master
+  tasks:
+    - name: 配置 kubeadm-config.yaml
+      shell:
+        cmd: |
+          rm -f ./kubeadm-config.yaml
+          cat <<EOF > ./kubeadm-config.yaml
+          apiVersion: kubeadm.k8s.io/v1beta2
+          kind: ClusterConfiguration
+          kubernetesVersion: v1.16.0
+          imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
+          controlPlaneEndpoint: "${APISERVER_NAME}:6443"
+          networking:
+            serviceSubnet: "10.96.0.0/16"
+            podSubnet: "${POD_SUBNET}"
+            dnsDomain: "cluster.local"
+          EOF
+    - name: kubeadm init
+      shell:
+        cmd: | 
+          kubeadm init --config=kubeadm-config.yaml --upload-certs
+    - name: kubectl 配置
+      shell:
+        cmd: |
+          rm -rf /root/.kube/
+          mkdir /root/.kube/
+          cp -i /etc/kubernetes/admin.conf /root/.kube/config
+    - name: 安装 calico 网络插件
+      shell:
+        cmd: |
+          rm -f calico.yaml
+          wget https://docs.projectcalico.org/v3.8/manifests/calico.yaml
+          sed -i "s#192\.168\.0\.0/16#${POD_SUBNET}#" calico.yaml
+          kubectl apply -f calico.yaml

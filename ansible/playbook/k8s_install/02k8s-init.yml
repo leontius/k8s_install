@@ -1,0 +1,57 @@
+- hosts: k8s
+  tasks:
+    - name: set nameserver
+      shell:
+        cmd: |
+          echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+    - name: install ntp
+      shell:
+        cmd: |
+          yum install -y ntp
+    - name: set ntp hosts
+      shell:
+        cmd: |
+          echo "server ntp1.aliyun.com" >> /etc/ntp.conf
+    - name: Make sure a ntp service is running 
+      systemd:
+        state: restarted
+        name: ntpd
+        enabled: yes
+    - name: modify sysctl
+      shell: 
+        cmd: | 
+          cat <<EOF > /etc/sysctl.d/k8s.conf 
+          net.bridge.bridge-nf-call-ip6tables = 1 
+          net.bridge.bridge-nf-call-iptables = 1 
+          EOF
+    - name: echo sysctl --system
+      shell:
+        cmd: |
+          sysctl --system
+      register: sysctl_result 
+    - name: show sysctl debug info 
+      debug: var=sysctl_result verbosity=0
+    - name: off swap
+      shell:
+        cmd: |
+          swapoff -a
+    - name: install nfs-util
+      shell:
+        cmd: |
+          yum install -y nfs-utils
+    - name: disable firewell
+      systemd:
+        state: stopped
+        name: firewalld
+        enabled: no
+    - name: disable selinux
+      shell:
+        cmd: |
+          setenforce 0
+          sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
+    - name: disable swap
+      shell:
+        cmd: |
+          swapoff -a
+          yes | cp /etc/fstab /etc/fstab_bak
+          cat /etc/fstab_bak |grep -v swap > /etc/fstab
