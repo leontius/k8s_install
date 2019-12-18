@@ -9,12 +9,16 @@
           kind: ClusterConfiguration
           kubernetesVersion: v1.16.0
           imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
-          controlPlaneEndpoint: "${APISERVER_NAME}:6443"
+          controlPlaneEndpoint: "apiserver.io:6443"
           networking:
             serviceSubnet: "10.96.0.0/16"
-            podSubnet: "${POD_SUBNET}"
+            podSubnet: "10.200.0.1/20"
             dnsDomain: "cluster.local"
           EOF
+    - name: kubeadm config images pull
+      shell:
+        cmd: |
+          kubeadm config images pull --config kubeadm-config.yaml
     - name: kubeadm init
       shell:
         cmd: | 
@@ -30,5 +34,4 @@
         cmd: |
           rm -f calico.yaml
           wget https://docs.projectcalico.org/v3.8/manifests/calico.yaml
-          sed -i "s#192\.168\.0\.0/16#${POD_SUBNET}#" calico.yaml
           kubectl apply -f calico.yaml

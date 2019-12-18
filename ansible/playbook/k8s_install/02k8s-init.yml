@@ -4,10 +4,10 @@
       shell:
         cmd: |
           echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-    - name: install ntp
+    - name: install ntp wget
       shell:
         cmd: |
-          yum install -y ntp
+          yum install -y ntp wget
     - name: set ntp hosts
       shell:
         cmd: |
