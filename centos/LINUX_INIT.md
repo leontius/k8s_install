@@ -50,4 +50,6 @@ sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
 iptables -P FORWARD ACCEPT
 ```
 
+其他方法可参考：[kubernetes issues#40182](https://github.com/kubernetes/kubernetes/issues/40182)
+
 至此设置完成。
