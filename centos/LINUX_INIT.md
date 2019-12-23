@@ -45,7 +45,7 @@ setenforce 0
 sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
 ```
 
-安装完高版本Docker(1.13以后版本)切换防火墙默认转发策略为ACCEPT
+安装完高版本Docker(1.13以后版本安装完会将iptables默认转发策略切换为DROP)切换防火墙默认转发策略为ACCEPT
 ``` shell
 iptables -P FORWARD ACCEPT
 ```
