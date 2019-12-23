@@ -55,3 +55,7 @@
           swapoff -a
           yes | cp /etc/fstab /etc/fstab_bak
           cat /etc/fstab_bak |grep -v swap > /etc/fstab
+    - name: Switch iptables forward default policy to accept
+      shell:
+        cmd: |
+          iptables -P FORWARD ACCEPT

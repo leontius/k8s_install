@@ -1,10 +1,15 @@
 # k8s_install
 
+[centos初始化](./centos/LINUX_INIT.md)
+
 [centos安装keepalived](./centos/INSTALL_KEEPALIVED.md)
 
 [centos安装HAProxy](./centos/INSTALL_HA.md)
 
+[kubectl多集群配置](./k8s/kubectl/KUBECTL_MULTIPLE_CLUSTER_CONFIG.md)   
+#
 kubeadm init
+
 ``` shell
 kubeadm init \
 --apiserver-advertise-address=10.6.208.11 \
@@ -62,6 +67,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 [calico官方文档](https://docs.projectcalico.org/v3.9/getting-started/kubernetes/)  
 应用yaml
+
 ``` shell
 kubectl apply -f https://docs.projectcalico.org/v3.9/manifests/calico.yaml
 watch kubectl get pods --all-namespaces
@@ -76,6 +82,7 @@ kube-system   calico-node-xnfnv                          1/1     Running   0    
 
 处理多master  
 传输证书文件到其他master
+
 ``` shell
 ssh zy-k8s-12 rm -rf /etc/kubernetes
 ssh zy-k8s-12 mkdir -p /etc/kubernetes/pki/etcd
@@ -107,6 +114,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 
 加入worker节点：  
 **：token有效期是有限的，如果旧的token过期，可以在master节点上使用kubeadm token create --print-join-command重新创建一条token。 
+
 ``` shell
 kubeadm join 10.6.208.100:16443 --token ncu01v.gv99eo6zwju93cqa \
     --discovery-token-ca-cert-hash sha256:79e9040911504bfb5a6c8fb8d64c2d06bff1c53983095688a97af49cdab21211 
